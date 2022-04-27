@@ -352,6 +352,7 @@ export default {
       : (this.nodeData = originData)
   },
   methods: {
+
     selectMap() {
       this.$emit('mapChange', this.draMap)
     },

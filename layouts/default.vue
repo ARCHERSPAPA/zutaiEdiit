@@ -10,7 +10,7 @@
           <el-menu-item index="openLoacal"
             >打开最近编辑（保存到浏览器的文件）</el-menu-item
           >
-            <el-menu-item index="preview">预览</el-menu-item>
+
           <el-menu-item index="replace">导入本地文件...</el-menu-item>
           <el-menu-item class="separator"></el-menu-item>
           <el-menu-item index="save">保存到本地</el-menu-item>
@@ -20,6 +20,8 @@
         </el-submenu>
         <el-submenu index="edit">
           <template slot="title">编辑</template>
+          <el-menu-item index="preview">预览</el-menu-item>
+          <el-menu-item index="edit">编辑</el-menu-item>
           <el-menu-item index="undo">撤消</el-menu-item>
           <el-menu-item index="redo">重做</el-menu-item>
           <el-menu-item class="separator"></el-menu-item>
@@ -150,16 +152,14 @@ export default {
         case 'new':
           this.$router.push('/workspace')
           break
-              case 'preview':
-          this.$router.push('/preMaps')
-          break
+
         case 'openLoacal':
           this.$router.push('/workspace')
-         setTimeout(() => {
+          setTimeout(() => {
             this.$store.commit('event/emit', {
               name: key,
             })
-          }, 200)
+          }, 400)
           break
         case 'open':
           this.$router.push('/workspace')

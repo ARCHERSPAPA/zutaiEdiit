@@ -71,6 +71,7 @@ export default {
       canvas: '',
       showModal: false,
       isPreve: false,
+      data: '',
       mapUrl: '/_nuxt/static/img/DC/ZT.png',
       props: {
         node: null,
@@ -174,7 +175,7 @@ export default {
           case 'line':
           case 'addLine':
             data.animatePlay = true
-            data.animateType='beads'
+            data.animateType = 'beads'
             this.props = {
               node: null,
               line: data,
@@ -185,7 +186,7 @@ export default {
             break
           case 'dblclick':
             if (data.tipId == 'fengji') {
-        console.log(this.props.node)
+              console.log(this.props.node)
               this.showModal = true
             }
             break
@@ -280,16 +281,24 @@ export default {
     handle_new(data) {
       canvas.open()
     },
-
+    handle_preview() {
+      this.data.locked = true
+      canvas.open(this.data)
+    },
+    handle_edit() {
+      this.data.locked = false
+      canvas.open(this.data)
+    },
     handle_open(data) {
       this.handle_replace(data)
     },
     //打开保存的数据
     handle_openLoacal() {
-      let data = JSON.parse(window.localStorage.getItem('maps'))
+      this.data = JSON.parse(window.localStorage.getItem('maps'))
+
       // data.locked=true     //锁定之后不能编辑
-      if (data) {
-        canvas.open(data)
+      if (this.data) {
+        canvas.open(this.data)
       }
       console.log(canvas)
     },
