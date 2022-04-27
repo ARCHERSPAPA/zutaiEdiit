@@ -1,61 +1,6 @@
 <template>
   <div class="page-list">
-    <div>
-      <div class="nav">
-        <label>热门图文</label>
-      </div>
-      <div class="flex wrap">
-        <div
-          class="topo"
-          v-for="(item, index) of data.list"
-          :key="index"
-          :title="item.desc"
-          @click="onOpen(item)"
-        >
-          <div class="image">
-            <img :src="item.image" />
-          </div>
-          <div class="ph15 pv10">
-            <div class="title line one" :title="item.name">{{ item.name }}</div>
-            <div class="desc line two mt5" :title="item.desc">{{ item.desc }}</div>
-            <div class="flex mt5">
-              <div class="full flex middle">
-                <el-avatar
-                  src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-                  :size="24"
-                ></el-avatar>
-                <span class="ml5">{{ item.username }}</span>
-              </div>
-              <div>
-                <span class="hover pointer mr15" title="赞">
-                  <i
-                    class="iconfont"
-                    :class="{'iconfont icon-appreciate':!item.stared, 'iconfont icon-appreciatefill':item.stared}"
-                  ></i>
-                  <span class="ml5">{{ item.star || 0 }}</span>
-                </span>
-                <span class="hover pointer" title="收藏">
-                  <i
-                    class="iconfont"
-                    :class="{'iconfont icon-like':!item.favorited, 'iconfont icon-likefill':item.favorited}"
-                  ></i>
-                  <span class="ml5">{{ item.hot || 0 }}</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <el-pagination
-          @current-change="getList"
-          :current-page="search.pageIndex"
-          :page-size="8"
-          layout=" prev, pager, next, jumper, total"
-          :total="data.count"
-        ></el-pagination>
-      </div>
-    </div>
+
   </div>
 </template>
 

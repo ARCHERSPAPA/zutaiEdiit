@@ -85,6 +85,7 @@ export default {
   methods: {
     onTop() {
       if (this.props.node) {
+        debugger
         this.canvas.top(this.props.node)
       }
 

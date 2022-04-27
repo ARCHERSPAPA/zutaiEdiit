@@ -1,29 +1,36 @@
 {
-  "name": "topology-vue",
+  "name": "onlineedit",
   "version": "1.0.0",
   "description": "A diagram project uses vue.",
   "author": "Alsmile",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "nuxt ",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
     "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore ."
   },
+  "config": {
+    "nuxt": {
+      "host": "0.0.0.0",
+      "port": "4300"
+    }
+  },
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
+    "@topology/activity-diagram": "^0.2.24",
+    "@topology/chart-diagram": "^0.2.24",
+    "@topology/class-diagram": "^0.2.24",
+    "@topology/core": "^0.2.32",
+    "@topology/flow-diagram": "^0.2.24",
+    "@topology/layout": "^0.2.24",
+    "@topology/sequence-diagram": "^0.2.24",
     "cookie-universal-nuxt": "^2.0.19",
     "element-ui": "^2.4.11",
     "file-saver": "^2.0.2",
     "nuxt": "^2.0.0",
-    "@topology/core": "^0.2.30",
-    "@topology/activity-diagram": "^0.2.24",
-    "@topology/class-diagram": "^0.2.24",
-    "@topology/flow-diagram": "^0.2.24",
-    "@topology/sequence-diagram": "^0.2.24",
-    "@topology/chart-diagram": "^0.2.24",
-    "@topology/layout": "^0.2.24"
+    "topology-vue": "^0.5.37"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^1.0.1",

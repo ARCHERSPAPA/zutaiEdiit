@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="tools">
+    <div class="tools" v-if="!isPreve">
       <div v-for="(item, index) in tools" :key="index">
         <div class="title">{{ item.group }}</div>
         <div class="buttons">
@@ -16,114 +16,151 @@
         </div>
       </div>
     </div>
-    <div id="topology-canvas" class="full" @contextmenu="onContextMenu($event)"></div>
-    <div class="props" :style="props.expand ? 'overflow: visible' : ''">
-      <CanvasProps :props.sync="props" @change="onUpdateProps"></CanvasProps>
+    <div
+      id="topology-canvas"
+      class="fulls"
+      @contextmenu="onContextMenu($event)"
+      @click="close"
+    ></div>
+    <div
+      class="props"
+      :style="props.expand ? 'overflow: visible' : ''"
+      v-if="!isPreve"
+    >
+      <CanvasProps
+        :props.sync="props"
+        @change="onUpdateProps"
+        @mapChange="updateMap"
+      ></CanvasProps>
     </div>
-    <div class="context-menu" v-if="contextmenu.left" :style="this.contextmenu">
-      <CanvasContextMenu :canvas="canvas" :props.sync="props"></CanvasContextMenu>
+    <div
+      class="context-menu"
+      v-if="contextmenu.left && !isPreve"
+      :style="this.contextmenu"
+    >
+      <CanvasContextMenu
+        :canvas="canvas"
+        :props.sync="props"
+      ></CanvasContextMenu>
     </div>
+    <template v-if="showModal">
+      <Modal class="modal" :props.sync="props" @close="close"></Modal>
+    </template>
   </div>
 </template>
 
 <script>
-import { Topology, Node, Line } from '@topology/core';
-import * as FileSaver from 'file-saver';
+import { Topology, Node, Line } from '@topology/core'
+import * as FileSaver from 'file-saver'
 
-import { Tools, canvasRegister } from '~/services/canvas';
+import { Tools, canvasRegister } from '~/services/canvas'
 
-import CanvasProps from '~/components/CanvasProps';
-import CanvasContextMenu from '~/components/CanvasContextMenu';
-
-let canvas;
+import CanvasProps from '~/components/CanvasProps'
+import CanvasContextMenu from '~/components/CanvasContextMenu'
+import Modal from '~/components/Modal'
+import { ref } from 'vue'
+let canvas
 const canvasOptions = {
-  rotateCursor: '/img/rotate.cur'
-};
+  rotateCursor: '/img/rotate.cur',
+}
 
 export default {
   data() {
     return {
       tools: Tools,
+      canvas: '',
+      showModal: false,
+      isPreve: false,
+      mapUrl: '/_nuxt/static/img/DC/ZT.png',
       props: {
         node: null,
         line: null,
         nodes: null,
         multi: false,
         expand: false,
-        locked: false
+        locked: false,
       },
       contextmenu: {
         left: null,
         top: null,
-        bottom: null
-      }
-    };
+        bottom: null,
+      },
+    }
   },
   components: {
     CanvasProps,
-    CanvasContextMenu
+    CanvasContextMenu,
+    Modal,
   },
   computed: {
     event() {
-      return this.$store.state.event.event;
-    }
+      return this.$store.state.event.event
+    },
   },
   watch: {
     event(curVal) {
       if (this['handle_' + curVal.name]) {
-        this['handle_' + curVal.name](curVal.data);
+        this['handle_' + curVal.name](curVal.data)
       }
     },
     $route(val) {
-      this.open();
-    }
+      this.open()
+    },
   },
   created() {
     if (process.client && window['echartsData']) {
       for (let key in window['echartsData']) {
-        document.body.removeChild(window['echartsData'][key]).div;
+        document.body.removeChild(window['echartsData'][key]).div
       }
-      window['echartsData'] = {};
+      window['echartsData'] = {}
     }
-    canvasRegister();
+
+    canvasRegister()
     if (process.client) {
-      document.onclick = event => {
+      document.onclick = (event) => {
         this.contextmenu = {
           left: null,
           top: null,
-          bottom: null
-        };
-      };
+          bottom: null,
+        }
+      }
     }
   },
   mounted() {
-    canvasOptions.on = this.onMessage;
-    canvas = new Topology('topology-canvas', canvasOptions);
-    this.open();
+    canvasOptions.on = this.onMessage
+    canvas = new Topology('topology-canvas', canvasOptions)
+    this.canvas = canvas
+    console.log(Node.cloneState)
+    this.open()
   },
   methods: {
+    close() {
+      this.showModal = false
+    },
     async open() {
       if (!this.$route.query.id) {
-        return;
+        return
       }
       const data = await this.$axios.$get(
         '/api/topology/' + this.$route.query.id
-      );
+      )
       if (data && data.id) {
-        canvas.open(data.data);
+        canvas.open(data.data)
       }
     },
 
     onDrag(event, node) {
-      event.dataTransfer.setData('Text', JSON.stringify(node.data));
+      console.log(event, node)
+      event.dataTransfer.setData('Text', JSON.stringify(node.data))
     },
 
     onMessage(event, data) {
-      console.log('onMessage', event, data);
+      console.log('onMessage', event, data)
       // 右侧输入框编辑状态时点击编辑区域其他元素，onMessage执行后才执行onUpdateProps方法，通过setTimeout让onUpdateProps先执行
       setTimeout(() => {
         switch (event) {
           case 'node':
+
           case 'addNode':
             this.props = {
               node: data,
@@ -131,39 +168,47 @@ export default {
               multi: false,
               expand: this.props.expand,
               nodes: null,
-              locked: data.locked
-            };
-            break;
+              locked: data.locked,
+            }
+            break
           case 'line':
           case 'addLine':
+            data.animatePlay = true
+            data.animateType='beads'
             this.props = {
               node: null,
               line: data,
               multi: false,
               nodes: null,
-              locked: data.locked
-            };
-            break;
+              locked: data.locked,
+            }
+            break
+          case 'dblclick':
+            if (data.tipId == 'fengji') {
+        console.log(this.props.node)
+              this.showModal = true
+            }
+            break
           case 'multi':
             this.props = {
               node: null,
               line: null,
               multi: true,
               nodes: data.length > 1 ? data : null,
-              locked: this.getLocked({ nodes: data })
-            };
-            break;
+              locked: this.getLocked({ nodes: data }),
+            }
+            break
           case 'space':
             this.props = {
               node: null,
               line: null,
               multi: false,
               nodes: null,
-              locked: false
-            };
-            break;
+              locked: false,
+            }
+            break
           case 'moveOut':
-            break;
+            break
           case 'moveNodes':
           case 'resizeNodes':
             if (data.length > 1) {
@@ -172,18 +217,18 @@ export default {
                 line: null,
                 multi: true,
                 nodes: data,
-                locked: this.getLocked({ nodes: data })
-              };
+                locked: this.getLocked({ nodes: data }),
+              }
             } else {
               this.props = {
                 node: data[0],
                 line: null,
                 multi: false,
                 nodes: null,
-                locked: false
-              };
+                locked: false,
+              }
             }
-            break;
+            break
           case 'resize':
           case 'scale':
           case 'locked':
@@ -193,97 +238,116 @@ export default {
                 lineName: canvas.data.lineName,
                 fromArrowType: canvas.data.fromArrowType,
                 toArrowType: canvas.data.toArrowType,
-                fromArrowlockedType: canvas.data.locked
-              });
+                fromArrowlockedType: canvas.data.locked,
+              })
             }
-            break;
+            break
         }
-      }, 0);
+      }, 0)
     },
 
     getLocked(data) {
-      let locked = true;
+      let locked = true
       if (data.nodes && data.nodes.length) {
         for (const item of data.nodes) {
           if (!item.locked) {
-            locked = false;
-            break;
+            locked = false
+            break
           }
         }
       }
       if (locked && data.lines) {
         for (const item of data.lines) {
           if (!item.locked) {
-            locked = false;
-            break;
+            locked = false
+            break
           }
         }
       }
 
-      return locked;
+      return locked
     },
 
     onUpdateProps(node) {
       // 如果是node属性改变，需要传入node，重新计算node相关属性值
       // 如果是line属性改变，无需传参
-      canvas.updateProps(node);
+      canvas.updateProps(node)
     },
-
+    updateMap(map) {
+      this.mapUrl = map
+      console.log(this.mapUrl, 32222)
+    },
     handle_new(data) {
-      canvas.open();
+      canvas.open()
     },
 
     handle_open(data) {
-      this.handle_replace(data);
+      this.handle_replace(data)
     },
-
+    //打开保存的数据
+    handle_openLoacal() {
+      let data = JSON.parse(window.localStorage.getItem('maps'))
+      // data.locked=true     //锁定之后不能编辑
+      if (data) {
+        canvas.open(data)
+      }
+      console.log(canvas)
+    },
+    handle_saveBrowser() {
+      window.localStorage.setItem('maps', JSON.stringify(canvas.data))
+      this.$message({
+        message: '保存成功！',
+        type: 'success',
+      })
+    },
     handle_replace(data) {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.onchange = event => {
-        const elem = event.srcElement || event.target;
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.onchange = (event) => {
+        const elem = event.srcElement || event.target
         if (elem.files && elem.files[0]) {
-          const name = elem.files[0].name.replace('.json', '');
-          const reader = new FileReader();
-          reader.onload = e => {
-            const text = e.target.result + '';
+          const name = elem.files[0].name.replace('.json', '')
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            const text = e.target.result + ''
             try {
-              const data = JSON.parse(text);
-              canvas.open(data);
+              const data = JSON.parse(text)
+              canvas.open(data)
             } catch (e) {
-              return false;
+              return false
             }
-          };
-          reader.readAsText(elem.files[0]);
+          }
+          reader.readAsText(elem.files[0])
         }
-      };
-      input.click();
+      }
+      input.click()
     },
 
     handle_save(data) {
+      console.log(canvas.data)
       FileSaver.saveAs(
         new Blob([JSON.stringify(canvas.data)], {
-          type: 'text/plain;charset=utf-8'
+          type: 'text/plain;charset=utf-8',
         }),
-        `le5le.topology.json`
-      );
+        `work.json`
+      )
     },
 
     handle_savePng(data) {
-      canvas.saveAsImage('le5le.topology.png');
+      canvas.saveAsImage('le5le.topology.png')
     },
 
     handle_saveSvg(data) {
-      const ctx = new C2S(canvas.canvas.width + 200, canvas.canvas.height + 200);
+      const ctx = new C2S(canvas.canvas.width + 200, canvas.canvas.height + 200)
       for (const item of canvas.data.nodes) {
-        item.render(ctx);
+        item.render(ctx)
       }
 
       for (const item of canvas.data.lines) {
-        item.render(ctx);
+        item.render(ctx)
       }
 
-      let mySerializedSVG = ctx.getSerializedSvg();
+      let mySerializedSVG = ctx.getSerializedSvg()
       mySerializedSVG = mySerializedSVG.replace(
         '<defs/>',
         `<defs>
@@ -294,73 +358,73 @@ export default {
       }
     </style>
   </defs>`
-      );
+      )
 
-      mySerializedSVG = mySerializedSVG.replace(/--le5le--/g, '&#x');
+      mySerializedSVG = mySerializedSVG.replace(/--le5le--/g, '&#x')
 
-      const urlObject = window.URL || window;
-      const export_blob = new Blob([mySerializedSVG]);
-      const url = urlObject.createObjectURL(export_blob);
+      const urlObject = window.URL || window
+      const export_blob = new Blob([mySerializedSVG])
+      const url = urlObject.createObjectURL(export_blob)
 
-      const a = document.createElement('a');
-      a.setAttribute('download', 'le5le.topology.svg');
-      a.setAttribute('href', url);
-      const evt = document.createEvent('MouseEvents');
-      evt.initEvent('click', true, true);
-      a.dispatchEvent(evt);
+      const a = document.createElement('a')
+      a.setAttribute('download', 'le5le.topology.svg')
+      a.setAttribute('href', url)
+      const evt = document.createEvent('MouseEvents')
+      evt.initEvent('click', true, true)
+      a.dispatchEvent(evt)
     },
 
     handle_undo(data) {
-      canvas.undo();
+      canvas.undo()
     },
 
     handle_redo(data) {
-      canvas.redo();
+      canvas.redo()
     },
 
     handle_copy(data) {
-      canvas.copy();
+      canvas.copy()
     },
 
     handle_cut(data) {
-      canvas.cut();
+      canvas.cut()
     },
 
     handle_parse(data) {
-      canvas.parse();
+      canvas.parse()
     },
 
     handle_state(data) {
-      canvas.data[data.key] = data.value;
+      canvas.data[data.key] = data.value
       this.$store.commit('canvas/data', {
         scale: canvas.data.scale || 1,
         lineName: canvas.data.lineName,
         fromArrowType: canvas.data.fromArrowType,
         toArrowType: canvas.data.toArrowType,
-        fromArrowlockedType: canvas.data.locked
-      });
+        fromArrowlockedType: canvas.data.locked,
+      })
     },
 
     onContextMenu(event) {
-      event.preventDefault();
-      event.stopPropagation();
+      event.preventDefault()
+      event.stopPropagation()
 
       if (event.clientY + 360 < document.body.clientHeight) {
         this.contextmenu = {
           left: event.clientX + 'px',
-          top: event.clientY + 'px'
-        };
+          top: event.clientY + 'px',
+        }
       } else {
         this.contextmenu = {
           left: event.clientX + 'px',
-          bottom: document.body.clientHeight - event.clientY + 'px'
-        };
+          bottom: document.body.clientHeight - event.clientY + 'px',
+        }
       }
-    }
+    },
   },
   destroyed() {
-    canvas.destroy();
-  }
+    canvas.destroy()
+  },
 }
 </script>
 
@@ -369,7 +433,7 @@ export default {
   display: flex;
   width: 100%;
   height: 100%;
-
+  position: relative;
   .tools {
     flex-shrink: 0;
     width: 1.75rem;
@@ -413,15 +477,36 @@ export default {
       }
     }
   }
-
-  .full {
+  .modal {
+    position: absolute;
+    left: 500px;
+    top: 150px;
+    display: inline-block;
+    min-width: 600px;
+    min-height: 600px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 1px 1px white;
+    border: 1px solid;
+    z-index: 11111;
+  }
+  .fulls {
     flex: 1;
     width: initial;
     position: relative;
+    max-height: 100%;
     overflow: auto;
-    background: #fff;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
   }
-
+  @keyframes test {
+    0% {
+      transform: translate(12px, 100px);
+    }
+    100% {
+      transform: translate(120px, 1000px);
+    }
+  }
   .props {
     flex-shrink: 0;
     width: 2.4rem;

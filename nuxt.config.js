@@ -1,10 +1,11 @@
+import path from "path";
 export default {
   mode: 'universal',
   /*
    ** Headers of the page
    */
   head: {
-    title: '乐吾乐 Topology - 开源免费绘图工具',
+    title: '组态组件编辑器',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -26,6 +27,12 @@ export default {
         rel: 'stylesheet',
         href: '//at.alicdn.com/t/font_1331132_5lvbai88wkb.css'
       }
+      ,
+      {
+        rel: 'stylesheet',
+        href: '//at.alicdn.com/t/font_3359403_fpydq03k236.css'
+      }
+
     ]
   },
   /*
@@ -35,6 +42,9 @@ export default {
   /*
    ** Global CSS
    */
+  alias:{
+    static:path.resolve('static/img')
+  },
   css: ['element-ui/lib/theme-chalk/index.css'],
   /*
    ** Plugins to load before mounting the App
@@ -76,6 +86,6 @@ export default {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {}
+    extend(config, ctx) { }
   }
 }

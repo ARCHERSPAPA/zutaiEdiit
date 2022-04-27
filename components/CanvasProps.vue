@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 选中为空 -->
-    <div v-if="!props.node && !props.line && !props.multi">
+    <!-- <div v-if="!props.node && !props.line && !props.multi">
       <div class="title">欢迎使用le5le-topology！</div>
       <div class="group">
         <a class="star" href="https://github.com/le5le-com/topology" target="_blank">喜欢，点击这里打个star吧</a>
@@ -33,7 +33,7 @@
           <li>添加或选中节点，右侧属性支持上传各种图片哦</li>
         </ul>
       </div>
-    </div>
+    </div> -->
     <!-- 选中节点 -->
     <div v-if="props.node">
       <div class="title">位置和大小</div>
@@ -171,10 +171,84 @@
       <div class="items gray" style="line-height: 1.5">
         内边距：输入数字表示像素；输入%表示百分比
       </div>
+      <div class="title" v-if="props.node.tipId == 'dianji1'">切换状态</div>
+      <div class="items" v-if="props.node.tipId == 'dianji1'">
+        <div class="flex grid">
+          <div title="padding-left"></div>
+        </div>
+        <div class="flex grid">
+          <el-select
+            v-model="props.node.image"
+            size="small"
+            @change="selectMap()"
+          >
+            <el-option
+              v-for="item in dianjiOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="items" v-if="props.node.tipId == 'fengji'">
+        <div class="flex grid">
+          <div title="padding-left"></div>
+        </div>
+        <div class="flex grid">
+          <el-select
+            v-model="props.node.image"
+            size="small"
+            @change="selectMap()"
+          >
+            <el-option
+              v-for="item in fengjiOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="title" v-if="props.node.name == 'text'">字体属性</div>
+      <div class="items" v-if="props.node.name == 'text'">
+        <div class="flex grid">
+          <div title="padding-left">文字大小</div>
+          <div title="padding-right" class="ml5">文字颜色</div>
+        </div>
+        <div class="flex grid">
+          <div>
+            <el-input
+              size="small"
+              v-model="props.node.font.fontSize"
+              controls-position="right"
+              @change="onChange"
+            ></el-input>
+          </div>
+          <div class="ml5">
+            <el-input
+              size="small"
+              v-model="props.node.font.color"
+              controls-position="right"
+              @change="onChange"
+            ></el-input>
+          </div>
+        </div>
+      </div>
       <div class="title"></div>
       <div class="items">
         <div class="flex grid">
-          <div class="custom-data">自定义数据 <i :class="props.expand ? 'el-icon-zoom-out' : 'el-icon-zoom-in'" @click="changeExpand" size='small'>{{props.expand ? '缩小' : '放大'}}</i></div>
+          <div class="custom-data">
+            自定义数据
+            <i
+              :class="props.expand ? 'el-icon-zoom-out' : 'el-icon-zoom-in'"
+              @click="changeExpand"
+              size="small"
+              >{{ props.expand ? '缩小' : '放大' }}</i
+            >
+          </div>
         </div>
         <div class="flex grid">
           <div :class="props.expand ? 'expand-data' : ''">
@@ -188,6 +262,25 @@
         </div>
       </div>
     </div>
+    <div class="draMap" v-else>
+      <el-select
+        v-model="draMap"
+        placeholder="请选择背景图"
+        size="small"
+        @change="selectMap()"
+      >
+        <el-option
+          v-for="item in mapOption"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        >
+        </el-option>
+      </el-select>
+      <!-- <el-button @click="saveMap()" size="small" style="margin-top:24px">
+        保存
+      </el-button> -->
+    </div>
   </div>
 </template>
 
@@ -197,41 +290,91 @@ export default {
     return {
       nodeId: null,
       nodeIsJson: false,
-      nodeData: ''
+      nodeData: '',
+      dianjiOption: [
+        {
+          label: '停用',
+          value: '/img/DC/dianji0.png',
+        },
+        {
+          label: '正常',
+          value: '/img/DC/dianji1.png',
+        },
+        {
+          label: '报警',
+          value: '/img/DC/dianji2.png',
+        },
+      ],
+      fengjiOption: [
+        {
+          label: '停用',
+          value: '/img/DC/fengji0.png',
+        },
+        {
+          label: '正常',
+          value: '/img/DC/fengji1.png',
+        },
+        {
+          label: '报警',
+          value: '/img/DC/fengji2.png',
+        },
+      ],
+      draMap: '/_nuxt/static/img/DC/ZT.png',
+      mapOption: [
+        {
+          label: '工程图',
+          value: '/_nuxt/static/img/DC/ZT.png',
+        },
+        {
+          label: '默认空白',
+          value: '',
+        },
+      ],
     }
   },
   props: {
     props: {
       type: Object,
-      require: true
-    }
+      require: true,
+    },
   },
   updated() {
     if (!this.props.node || this.nodeId === this.props.node.id) {
-      return;
+      return
     }
-    this.props.expand = false;
-    this.nodeId = this.props.node.id;
-    let originData = this.props.node.data;
-    this.nodeIsJson = this.isJson(originData);
-    this.nodeData = this.nodeIsJson ?
-      JSON.stringify(originData, null, 4) :
-      this.nodeData = originData;
+    console.log(this.props)
+    this.props.expand = false
+    this.nodeId = this.props.node.id
+    let originData = this.props.node.data
+    this.nodeIsJson = this.isJson(originData)
+    this.nodeData = this.nodeIsJson
+      ? JSON.stringify(originData, null, 4)
+      : (this.nodeData = originData)
   },
   methods: {
+    selectMap() {
+      this.$emit('mapChange', this.draMap)
+    },
     onChange(value) {
       if (this.props.node) {
-        this.props.node.data = this.nodeIsJson ? JSON.parse(this.nodeData) : this.nodeData;
+        this.props.node.data = this.nodeIsJson
+          ? JSON.parse(this.nodeData)
+          : this.nodeData
       }
-      this.$emit('change', this.props.node);
+      this.$emit('change', this.props.node)
     },
     changeExpand() {
-      this.props.expand = !this.props.expand;
+      this.props.expand = !this.props.expand
     },
-    isJson (obj) {
-      return typeof(obj) == "object" && Object.prototype.toString.call(obj).toLowerCase() == "[object object]" && !obj.length;
-    }
-  }
+    isJson(obj) {
+      return (
+        typeof obj == 'object' &&
+        Object.prototype.toString.call(obj).toLowerCase() ==
+          '[object object]' &&
+        !obj.length
+      )
+    },
+  },
 }
 </script>
 
@@ -305,5 +448,8 @@ export default {
 
 .formItem {
   margin-bottom: 0.1rem;
+}
+.draMap {
+  padding: 8px;
 }
 </style>

@@ -167,6 +167,9 @@ export const Tools = [
         icon: 'icon-line',
         data: {
           text: '直线',
+          animateAlone: 'test',
+          animateDuration: 2,
+          animatePlay: true,
           rect: {
             width: 100,
             height: 100
@@ -222,12 +225,25 @@ export const Tools = [
         name: 'text',
         icon: 'icon-text',
         data: {
-          text: 'le5le-topology / 乐吾乐',
+          text: '文字',
           rect: {
             width: 160,
             height: 30
           },
           name: 'text'
+        }
+      },
+      {
+        name: 'tube',
+        icon: 'icon-image',
+        data: {
+          text: '',
+          rect: {
+            width: 100,
+            height: 100
+          },
+          name: 'image',
+          image: '/img/tube.png'
         }
       },
       {
@@ -476,6 +492,82 @@ export const Tools = [
           name: 'flowComment'
         }
       }
+    ]
+  },
+  {
+    group: '工程工具',
+    children: [
+      {
+        name: '阀门',
+        icon: 'icon-dianqi',
+        data: {
+          text: '',
+          rect: {
+            width: 100,
+            height: 100
+          },
+          name: 'image',
+          image: '/img/DC/famen11.png'
+        }
+      },
+      {
+        name: '风机',
+        icon: 'icon-fengji',
+        data: {
+          text: '',
+          tipId: 'fengji',
+          animatePlay: true,
+          animateDuration:5,
+          animateFrames:[],
+          animateType: 'beads',
+          rect: {
+            width: 43,
+            height: 23
+          },
+          name: 'image',
+          image: '/img/DC/fengji1.png'
+        }
+      },
+      {
+        name: 'qsb',
+        icon: 'icon-dici',
+        data: {
+          text: '',
+          rect: {
+            width: 43,
+            height: 60
+          },
+          name: 'image',
+          image: '/img/DC/qsb1.png'
+        }
+      },
+      {
+        name: '电机',
+        icon: 'icon-dianji',
+        data: {
+          text: '',
+          tipId: 'dianji1',
+          rect: {
+            width: 43,
+            height: 20
+          },
+          name: 'image',
+          image: '/img/DC/dianji1.png'
+        }
+      },
+      {
+        name: 'back',
+        icon: 'icon-image',
+        data: {
+          text: '',
+          rect: {
+            width: 100,
+            height: 100
+          },
+          name: 'image',
+          image: '/img/DC/ZT.PNG'
+        }
+      },
     ]
   },
   {
@@ -913,4 +1005,5 @@ export const Tools = [
       }
     ]
   }
+
 ]
