@@ -30,7 +30,7 @@ export default {
       ,
       {
         rel: 'stylesheet',
-        href: '//at.alicdn.com/t/font_3359403_fpydq03k236.css'
+        href: '//at.alicdn.com/t/font_3359403_b9wkv9hurz5.css'
       }
 
     ]

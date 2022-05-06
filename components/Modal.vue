@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-    <p><span class="title">{{props.node.tipId}}</span> <span class="close" @click="close">X</span></p>
+    <p v-if="props.node"><span class="title">{{props.node.tipId}}</span> <span class="close" @click="close">X</span></p>
   </div>
 </template>
 

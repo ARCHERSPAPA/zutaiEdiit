@@ -29,8 +29,7 @@
     "cookie-universal-nuxt": "^2.0.19",
     "element-ui": "^2.4.11",
     "file-saver": "^2.0.2",
-    "nuxt": "^2.0.0",
-    "topology-vue": "^0.5.37"
+    "nuxt": "^2.0.0"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^1.0.1",

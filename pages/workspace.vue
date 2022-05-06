@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="tools" v-if="!isPreve">
+    <div class="tools" v-if="!data.locked">
       <div v-for="(item, index) in tools" :key="index">
         <div class="title">{{ item.group }}</div>
         <div class="buttons">
@@ -25,7 +25,7 @@
     <div
       class="props"
       :style="props.expand ? 'overflow: visible' : ''"
-      v-if="!isPreve"
+      v-show="!data.locked"
     >
       <CanvasProps
         :props.sync="props"
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { Topology, Node, Line } from '@topology/core'
+import { Topology, Node, Line, Pen } from '@topology/core'
 import * as FileSaver from 'file-saver'
 
 import { Tools, canvasRegister } from '~/services/canvas'
@@ -130,8 +130,17 @@ export default {
   mounted() {
     canvasOptions.on = this.onMessage
     canvas = new Topology('topology-canvas', canvasOptions)
+    console.log(canvas.addPen, 2222222)
     this.canvas = canvas
-    console.log(Node.cloneState)
+    // const pen = {
+    //   name: 'rectangle',
+    //   text: '矩形',
+    //   x: 100,
+    //   y: 100,
+    //   width: 100,
+    //   height: 100,
+    // }
+    //  canvas.addPen(pen,true)
     this.open()
   },
   methods: {
@@ -151,10 +160,23 @@ export default {
     },
 
     onDrag(event, node) {
-      console.log(event, node)
+      console.log(
+        event.dataTransfer.getData('Text'),
+        JSON.stringify(node.data),
+        this.canvas,
+        this.event
+      )
+
       event.dataTransfer.setData('Text', JSON.stringify(node.data))
     },
-
+    closeLineAnimate(type) {
+      this.canvas.canvas.data.pens.forEach((pen) => {
+        if (pen.name == 'line') {
+          pen.animatePlay = !pen.animatePlay
+          pen.animateSpan = type ? 3 : '3'
+        }
+      })
+    },
     onMessage(event, data) {
       console.log('onMessage', event, data)
       // 右侧输入框编辑状态时点击编辑区域其他元素，onMessage执行后才执行onUpdateProps方法，通过setTimeout让onUpdateProps先执行
@@ -163,6 +185,7 @@ export default {
           case 'node':
 
           case 'addNode':
+            console.log(111111111)
             this.props = {
               node: data,
               line: null,
@@ -173,9 +196,16 @@ export default {
             }
             break
           case 'line':
+            this.props = {
+              node: null,
+              line: data,
+              multi: false,
+              nodes: null,
+              locked: data.locked,
+            }
+            break
           case 'addLine':
-            data.animatePlay = true
-            data.animateType = 'beads'
+            console.log(2222222222222)
             this.props = {
               node: null,
               line: data,
@@ -186,8 +216,29 @@ export default {
             break
           case 'dblclick':
             if (data.tipId == 'fengji') {
-              console.log(this.props.node)
+              console.log(this.canvas)
               this.showModal = true
+              this.closeLineAnimate()
+              this.canvas.render()
+              this.canvas.animate(true)
+              this.canvas.cache()
+              this.$forceUpdate()
+            }
+            if (data.id == 'close') {
+              console.log(this.canvas, 122222222223)
+              this.closeLineAnimate(false)
+              this.canvas.render()
+              this.canvas.animate(true)
+              this.canvas.cache()
+              this.$forceUpdate()
+            }
+            if (data.id == 'open') {
+              console.log(this.canvas, 122222222223)
+              this.closeLineAnimate(true)
+              this.canvas.render()
+              this.canvas.animate(true)
+              this.canvas.cache()
+              this.$forceUpdate()
             }
             break
           case 'multi':
@@ -269,16 +320,24 @@ export default {
       return locked
     },
 
-    onUpdateProps(node) {
+    onUpdateProps(type, node) {
       // 如果是node属性改变，需要传入node，重新计算node相关属性值
       // 如果是line属性改变，无需传参
-      canvas.updateProps(node)
+      if (type == 1) {
+        this.canvas.render()
+        this.canvas.animate(true)
+        this.canvas.cache()
+      } else {
+        canvas.updateProps(node)
+      }
     },
     updateMap(map) {
       this.mapUrl = map
       console.log(this.mapUrl, 32222)
     },
     handle_new(data) {
+      canvas = new Topology('topology-canvas', canvasOptions)
+      this.canvas = canvas
       canvas.open()
     },
     handle_preview() {
@@ -405,6 +464,7 @@ export default {
 
     handle_state(data) {
       canvas.data[data.key] = data.value
+      console.log(canvas.data, data)
       this.$store.commit('canvas/data', {
         scale: canvas.data.scale || 1,
         lineName: canvas.data.lineName,
@@ -507,14 +567,6 @@ export default {
     overflow: auto;
     background-size: contain !important;
     background-repeat: no-repeat !important;
-  }
-  @keyframes test {
-    0% {
-      transform: translate(12px, 100px);
-    }
-    100% {
-      transform: translate(120px, 1000px);
-    }
   }
   .props {
     flex-shrink: 0;

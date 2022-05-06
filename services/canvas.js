@@ -289,11 +289,14 @@ export const Tools = [
           name: 'people'
         }
       },
+      
       {
         name: '视频/网页',
         icon: 'icon-pc',
         data: {
           text: '视频/网页',
+          video: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
+          tipId:'video',
           rect: {
             width: 200,
             height: 200
@@ -502,6 +505,7 @@ export const Tools = [
         icon: 'icon-dianqi',
         data: {
           text: '',
+          tipId: 'famen',
           rect: {
             width: 100,
             height: 100
@@ -548,15 +552,43 @@ export const Tools = [
           text: '',
           tipId: 'dianji1',
           rect: {
-            width: 43,
-            height: 20
+            width: 25,
+            height: 23
           },
           name: 'image',
           image: '/img/DC/dianji1.png'
         }
       },
       {
-        name: 'back',
+        name: '除臭系统',
+        icon: 'icon-gongcheng-',
+        data: {
+          text: '',
+          tipId: 'chuchou',
+          rect: {
+            width: 100,
+            height: 40
+          },
+          name: 'image',
+          image: '/img/DC/061.png'
+        }
+      },
+      {
+        name: 'tuijiu',
+        icon: 'icon-gongcheng',
+        data: {
+          text: '',
+          tipId: 'tuijiu',
+          rect: {
+            width: 100,
+            height: 40
+          },
+          name: 'image',
+          image: '/img/DC/tuijiu1.png'
+        }
+      },
+      {
+        name: 'black',
         icon: 'icon-image',
         data: {
           text: '',
@@ -566,6 +598,18 @@ export const Tools = [
           },
           name: 'image',
           image: '/img/DC/ZT.PNG'
+        }
+      },
+      {
+        name: 'black',
+        icon: 'icon-image',
+        data: {
+          text: '',
+          rect: {
+            width: 0,
+            height: 0
+          },
+          name: 'rectangle',
         }
       },
     ]

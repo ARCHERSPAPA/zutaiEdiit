@@ -171,6 +171,48 @@
       <div class="items gray" style="line-height: 1.5">
         内边距：输入数字表示像素；输入%表示百分比
       </div>
+      <div class="items" v-if="props.node.tipId == 'video'">
+        <div class="flex grid">
+          <div title="padding-left">视频播放地址</div>
+        </div>
+        <div class="flex grid">
+          <el-input
+            size="small"
+            v-model="props.node.video"
+            controls-position="right"
+            @change="onChange"
+          ></el-input>
+        </div>
+      </div>
+      <div class="items">
+        <div class="flex grid">
+          <div title="padding-left">Id(自定义组件的ID)</div>
+        </div>
+        <div class="flex grid">
+          <el-input
+            size="small"
+            v-model="props.node.id"
+            controls-position="right"
+            @change="onChange"
+          ></el-input>
+        </div>
+      </div>
+      <div class="items">
+        <div class="flex grid">
+          <div title="padding-left">添加事件</div>
+        </div>
+        <div class="flex grid">
+          <el-select v-model="playAnimate" size="small" @change="selectMap()">
+            <el-option
+              v-for="item in eventOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </div>
+      </div>
       <div class="title" v-if="props.node.tipId == 'dianji1'">切换状态</div>
       <div class="items" v-if="props.node.tipId == 'dianji1'">
         <div class="flex grid">
@@ -212,6 +254,47 @@
           </el-select>
         </div>
       </div>
+      <div class="items" v-if="props.node.tipId == 'famen'">
+        <div class="flex grid">
+          <div title="padding-left"></div>
+        </div>
+        <div class="flex grid">
+          <el-select
+            v-model="props.node.image"
+            size="small"
+            @change="selectMap()"
+          >
+            <el-option
+              v-for="item in famenOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+      <div class="items" v-if="props.node.tipId == 'tuijiu'">
+        <div class="flex grid">
+          <div title="padding-left"></div>
+        </div>
+        <div class="flex grid">
+          <el-select
+            v-model="props.node.image"
+            size="small"
+            @change="selectMap()"
+          >
+            <el-option
+              v-for="item in tuijiuOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </div>
+      </div>
+
       <div class="title" v-if="props.node.name == 'text'">字体属性</div>
       <div class="items" v-if="props.node.name == 'text'">
         <div class="flex grid">
@@ -234,6 +317,29 @@
               controls-position="right"
               @change="onChange"
             ></el-input>
+          </div>
+        </div>
+      </div>
+      <div class="title">自定义数据源</div>
+      <div class="items">
+        <div class="flex grid">
+          <div>切换数据源</div>
+        </div>
+        <div class="flex grid">
+          <div class="ml5">
+            <el-select
+              v-model="props.node.origin"
+              size="small"
+              @change="selectMap()"
+            >
+              <el-option
+                v-for="item in originOption"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </div>
         </div>
       </div>
@@ -277,6 +383,81 @@
         >
         </el-option>
       </el-select>
+      <div class="line" v-if="props.line">
+        <div class="title" v-if="props.line.name == 'line'">线条属性</div>
+        <div class="items" v-if="props.line.name == 'line'">
+          <div class="flex grid">
+            <div title="padding-left">线条宽度</div>
+            <div title="padding-right" class="ml5">线条颜色</div>
+          </div>
+          <div class="flex grid">
+            <div>
+              <el-input
+                size="small"
+                v-model="props.line.lineWidth"
+                controls-position="right"
+                @change="onChange"
+              ></el-input>
+            </div>
+            <div class="ml5">
+              <el-input
+                size="small"
+                v-model="props.line.strokeStyle"
+                controls-position="right"
+                @change="onChange"
+              ></el-input>
+            </div>
+          </div>
+          <div class="title" v-if="props.line.name == 'line'">线条动画属性</div>
+          <div class="flex grid">
+            <div title="padding-left">动画颜色</div>
+            <div title="padding-right" class="ml5">动画速度</div>
+          </div>
+          <div class="flex grid">
+            <div>
+              <el-input
+                size="small"
+                v-model="props.line.animateColor"
+                controls-position="right"
+                @change="onChange"
+              ></el-input>
+            </div>
+            <div class="ml5">
+              <el-input
+                size="small"
+                v-model="props.line.animateSpan"
+                controls-position="right"
+                @change="onChange"
+              ></el-input>
+            </div>
+          </div>
+          <div class="flex grid">
+            <div title="padding-left">动画开关</div>
+            <div title="padding-right" class="ml5">动画类型</div>
+          </div>
+          <div class="flex grid">
+            <div>
+              <el-select
+                v-model="props.line.animatePlay"
+                size="small"
+                @change="onChange(1)"
+              >
+                <el-option label="开" :value="true"> </el-option>
+                <el-option label="关" :value="undefined"> </el-option>
+              </el-select>
+            </div>
+            <div class="ml5">
+              <el-input
+                size="small"
+                v-model="props.line.animateType"
+                @change="onChange"
+                controls-position="right"
+              ></el-input>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- <el-button @click="saveMap()" size="small" style="margin-top:24px">
         保存
       </el-button> -->
@@ -291,6 +472,52 @@ export default {
       nodeId: null,
       nodeIsJson: false,
       nodeData: '',
+      origin: '1',
+      playAnimate: null,
+      eventOption: [
+        {
+          label: '开启动画',
+          value: 1,
+        },
+        {
+          label: '关闭动画',
+          value: 0,
+        },
+      ],
+      originOption: [
+        {
+          label: '简阳数据',
+          value: '1',
+        },
+        {
+          label: '北京数据',
+          value: '2',
+        },
+      ],
+      tuijiuOption: [
+        {
+          label: '停用',
+          value: '/img/DC/tuijiu0.png',
+        },
+        {
+          label: '正常',
+          value: '/img/DC/tuijiu1.png',
+        },
+        {
+          label: '报警',
+          value: '/img/DC/tuijiu2.png',
+        },
+      ],
+      famenOption: [
+        {
+          label: '开启',
+          value: '/img/DC/famen11.png',
+        },
+        {
+          label: '关闭',
+          value: '/img/DC/famen12.png',
+        },
+      ],
       dianjiOption: [
         {
           label: '停用',
@@ -339,10 +566,11 @@ export default {
     },
   },
   updated() {
+    console.log(this.props, 3333333333333)
     if (!this.props.node || this.nodeId === this.props.node.id) {
       return
     }
-    console.log(this.props)
+
     this.props.expand = false
     this.nodeId = this.props.node.id
     let originData = this.props.node.data
@@ -352,17 +580,20 @@ export default {
       : (this.nodeData = originData)
   },
   methods: {
-
     selectMap() {
       this.$emit('mapChange', this.draMap)
     },
-    onChange(value) {
+    onChange(type = 0) {
       if (this.props.node) {
         this.props.node.data = this.nodeIsJson
           ? JSON.parse(this.nodeData)
           : this.nodeData
       }
-      this.$emit('change', this.props.node)
+      if (type == 1) {
+        this.props.line.animateStart = null
+        this.$emit('change', type,this.props.line)
+      }
+      this.$emit('change', type,this.props.node)
     },
     changeExpand() {
       this.props.expand = !this.props.expand
