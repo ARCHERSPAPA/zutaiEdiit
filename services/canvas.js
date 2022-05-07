@@ -537,6 +537,7 @@ export const Tools = [
         icon: 'icon-dici',
         data: {
           text: '',
+          data:{'httpURL':'loacalhost',datas:''},
           rect: {
             width: 43,
             height: 60

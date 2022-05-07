@@ -364,6 +364,19 @@
               :rows="props.expand ? 15 : 3"
               @change="onChange"
             ></el-input>
+            <div class="title">
+              <div>下发地址</div>
+            </div>
+            <el-input
+              v-if="props.node.data.httpURL"
+              type="text"
+              placeholder="请输入下发地址"
+              v-model="props.node.data.httpURL"
+              @change="onChange"
+            ></el-input>
+            <div class="title">
+              <el-button v-if="props.node.data.httpURL">下发数据</el-button>
+            </div>
           </div>
         </div>
       </div>
@@ -419,16 +432,23 @@
                 size="small"
                 v-model="props.line.animateColor"
                 controls-position="right"
-                @change="onChange"
+                @change="onChange(1)"
               ></el-input>
             </div>
             <div class="ml5">
-              <el-input
-                size="small"
+              <el-select
                 v-model="props.line.animateSpan"
-                controls-position="right"
-                @change="onChange"
-              ></el-input>
+                size="small"
+                @change="onChange(1)"
+              >
+                <el-option
+                  v-for="item in spanOption"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
             </div>
           </div>
           <div class="flex grid">
@@ -450,7 +470,7 @@
               <el-input
                 size="small"
                 v-model="props.line.animateType"
-                @change="onChange"
+                @change="onChange(1)"
                 controls-position="right"
               ></el-input>
             </div>
@@ -474,6 +494,24 @@ export default {
       nodeData: '',
       origin: '1',
       playAnimate: null,
+      spanOption: [
+        {
+          label: '1',
+          value: 1,
+        },
+        {
+          label: '2',
+          value: 2,
+        },
+        {
+          label: '3',
+          value: 3,
+        },
+        {
+          label: '4',
+          value: 4,
+        },
+      ],
       eventOption: [
         {
           label: '开启动画',
@@ -591,9 +629,10 @@ export default {
       }
       if (type == 1) {
         this.props.line.animateStart = null
-        this.$emit('change', type,this.props.line)
+        this.props.line.animateSpan = Number(this.props.line.animateSpan)
+        this.$emit('change', type, this.props.line)
       }
-      this.$emit('change', type,this.props.node)
+      this.$emit('change', type, this.props.node)
     },
     changeExpand() {
       this.props.expand = !this.props.expand

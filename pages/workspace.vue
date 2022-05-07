@@ -130,8 +130,15 @@ export default {
   mounted() {
     canvasOptions.on = this.onMessage
     canvas = new Topology('topology-canvas', canvasOptions)
-    console.log(canvas.addPen, 2222222)
+    console.log(canvas, 2222222)
     this.canvas = canvas
+    this.canvas.openSocket('ws://localhost:2000')
+    this.canvas.socket.socket.onmessage = (e) => {
+      console.log('wojinlail', e)
+    }
+    this.canvas.socket.socket.onclose = (e) => {
+      console.log('wojinlail', e)
+    }
     // const pen = {
     //   name: 'rectangle',
     //   text: '矩形',
@@ -218,11 +225,6 @@ export default {
             if (data.tipId == 'fengji') {
               console.log(this.canvas)
               this.showModal = true
-              this.closeLineAnimate()
-              this.canvas.render()
-              this.canvas.animate(true)
-              this.canvas.cache()
-              this.$forceUpdate()
             }
             if (data.id == 'close') {
               console.log(this.canvas, 122222222223)
