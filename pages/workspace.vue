@@ -132,6 +132,9 @@ export default {
     canvas = new Topology('topology-canvas', canvasOptions)
     console.log(canvas, 2222222)
     this.canvas = canvas
+    // fetch('https://192.168.3.70', {
+    //   data: 'omit',
+    // })
     this.canvas.openSocket('ws://localhost:2000')
     this.canvas.socket.socket.onmessage = (e) => {
       console.log('wojinlail', e)
@@ -227,7 +230,7 @@ export default {
               this.showModal = true
             }
             if (data.id == 'close') {
-              console.log(this.canvas, 122222222223)
+              console.log(this.canvas.undo, this.canvas.dispatch, 122222222223)
               this.closeLineAnimate(false)
               this.canvas.render()
               this.canvas.animate(true)
@@ -331,6 +334,11 @@ export default {
         this.canvas.cache()
       } else {
         canvas.updateProps(node)
+        this.canvas.render()
+        this.canvas.needCache = true
+        this.canvas.cache()
+        this.canvas.undo()
+        this.$forceUpdate()
       }
     },
     updateMap(map) {

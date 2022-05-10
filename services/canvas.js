@@ -1,11 +1,12 @@
 import { register as registerFlow } from '@topology/flow-diagram'
 import { register as registerActivity } from '@topology/activity-diagram'
 import { register as registerSequence } from '@topology/sequence-diagram'
-
+import { register as registerEcharts } from "@topology/chart-diagram";
 import { register as registerClass } from '~/class-diagram/index'
 
 export function canvasRegister() {
   registerFlow()
+  registerEcharts()
   registerActivity()
   registerSequence()
   registerClass()
@@ -947,6 +948,7 @@ export const Tools = [
           }
         }
       },
+
       {
         name: '饼图',
         icon: 'icon-pie-chart',
